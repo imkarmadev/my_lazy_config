@@ -16,8 +16,27 @@ return {
         debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
         adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
       })
-
-      for _, language in ipairs({ "typescript", "javascript", "svelte" }) do
+      -- vscode-js-debug (js-debug-adapter in Mason)
+      -- require("dap-vscode-js").setup({
+      --   debugger_path = vim.fn.stdpath("data") .. "/mason/packages/js-debug-adapter",
+      --   debugger_cmd = { "js-debug-adapter" },
+      --   adapters = {
+      --     "pwa-node",
+      --     "pwa-chrome",
+      --     "pwa-msedge",
+      --     "node-terminal",
+      --     "pwa-extensionHost",
+      --   },
+      -- })
+      for _, language in ipairs({
+        "javascript",
+        "typescript",
+        "javascriptreact",
+        "typescriptreact",
+        -- using pwa-chrome
+        "vue",
+        "svelte",
+      }) do
         require("dap").configurations[language] = {
           -- attach to a node process that has been started with
           -- `--inspect` for longrunning tasks or `--inspect-brk` for short tasks
@@ -64,6 +83,16 @@ return {
             cwd = "${workspaceFolder}",
             runtimeExecutable = "npx",
             runtimeArgs = { "tsx" },
+          },
+          {
+            request = "launch",
+            name = "Deno launch",
+            type = "pwa-node",
+            program = "${file}",
+            cwd = "${workspaceFolder}",
+            runtimeExecutable = "deno",
+            runtimeArgs = { "run", "--inspect-brk", "-A" },
+            attachSimplePort = 9229,
           },
         }
       end
